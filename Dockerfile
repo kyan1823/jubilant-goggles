@@ -1,7 +1,7 @@
 FROM alpine:3.23.3
 
-LABEL version="1.0" \
-      description="A Docker image for Xray and FRP" \
+LABEL version="1.1" \
+      description="A Docker image for clawcloud Free-Plan-Compatible" \
       maintainer="kyan1823"
 
 ENV XRAY_VERSION=v26.2.6
@@ -22,23 +22,14 @@ RUN set -eux; \
     mv /tmp/frp/frps /tmp/frp/frpc /tmp/xray/xray /usr/local/bin/; \
     mkdir -p /usr/local/share/xray; \
     mv /tmp/xray/*.dat /usr/local/share/xray/ 2>/dev/null || true; \
-    mv /tmp/xray/ /tmp/frp/ /root; \
-    touch /root/xray/config.json; \
-    rm /tmp/xray.zip /tmp/frp.tar.gz
+    mkdir -p /root/xray /root/frp; \
+#    touch /root/xray/config.json; \
+    rm /tmp/xray/ /tmp/frp/ /tmp/xray.zip /tmp/frp.tar.gz
 
 RUN curl -fSL -o /usr/local/share/xray/geoip.dat https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geoip.dat \
     && curl -fSL -o /usr/local/share/xray/geosite.dat https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geosite.dat
 
-RUN cat > /root/start.sh <<'EOF'
-#!/bin/ash
-set -e
-[ -f /root/frp/frps.toml ] && /usr/local/bin/frps -c /root/frp/frps.toml &
-[ -f /root/frp/frpc.toml ] && /usr/local/bin/frpc -c /root/frp/frpc.toml &
-[ -f /root/xray/config.json ] && /usr/local/bin/xray -c /root/xray/config.json &
-wait
-EOF
-
-RUN chmod 755 /root/start.sh
+COPY --chown=0:0 --chmod=755 ./start.sh .
 
 ARG TZ=Asia/Shanghai
 ENV TZ=${TZ}
