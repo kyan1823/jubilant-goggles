@@ -23,8 +23,8 @@ RUN set -eux; \
     mkdir -p /usr/local/share/xray; \
     mv /tmp/xray/*.dat /usr/local/share/xray/ 2>/dev/null || true; \
     mkdir -p /root/xray /root/frp; \
-#    touch /root/xray/config.json; \
-    rm /tmp/xray/ /tmp/frp/ /tmp/xray.zip /tmp/frp.tar.gz
+#   touch /root/xray/config.json; \
+    rm -rf /tmp/xray/ /tmp/frp/ /tmp/xray.zip /tmp/frp.tar.gz
 
 RUN curl -fSL -o /usr/local/share/xray/geoip.dat https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geoip.dat \
     && curl -fSL -o /usr/local/share/xray/geosite.dat https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/geosite.dat
