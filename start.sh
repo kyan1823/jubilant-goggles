@@ -6,10 +6,14 @@ cleanup() {
     echo "Received termination signal, shutting down..."
     if [ ! -f /root/backup.sh ]; then
         echo "warn: backup.sh not found"
-    elif /bin/ash /root/backup.sh; then
-        echo "info: backup success"
     else
-        echo "error: backup failed, $result"
+        /bin/ash /root/backup.sh
+        result=$?
+        if [ result -eq 0 ]; then
+            echo "info: backup script executed successfully"
+        else
+            echo "error: backup script execution failed, exit code $result"
+        fi
     fi
     exit 0
 }
@@ -18,10 +22,14 @@ trap cleanup TERM INT
 
 if [ ! -f /root/recovery.sh ]; then
     echo "warn: recovery.sh not found"
-elif /bin/ash /root/recovery.sh; then
-    echo "info: recovery success"
 else
-    echo "error: recovery failed, $result"
+    /bin/ash /root/recovery.sh
+    result=$?
+    if [ result -eq 0 ]; then
+        echo "info: recovery script executed successfully"
+    else
+        echo "error: recovery script execution failed, exit code $result"
+    fi
 fi
 /usr/sbin/sshd &
 /usr/sbin/crond -c /etc/crontabs &
