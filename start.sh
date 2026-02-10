@@ -4,9 +4,10 @@ CLOUDFLARED_TOKEN="${CLOUDFLARED_TOKEN:-}"
 
 cleanup() {
     echo "Received termination signal, shutting down..."
-    [ -f /root/backup.sh ] && /bin/ash /root/backup.sh
-    if [ $? -ne 255 ]; then
-        echo "info: backup success, $result"
+    if [ ! -f /root/backup.sh ]; then
+        echo "warn: backup.sh not found"
+    elif /bin/ash /root/backup.sh; then
+        echo "info: backup success"
     else
         echo "error: backup failed, $result"
     fi
@@ -15,9 +16,10 @@ cleanup() {
 
 trap cleanup TERM INT
 
-[ -f /root/recovery.sh ] && /bin/ash /root/recovery.sh
-if [ $? -ne 255 ]; then
-    echo "info: recovery success, $result"
+if [ ! -f /root/recovery.sh ]; then
+    echo "warn: recovery.sh not found"
+elif /bin/ash /root/recovery.sh; then
+    echo "info: recovery success"
 else
     echo "error: recovery failed, $result"
 fi
